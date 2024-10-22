@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loja de Produtos</title>
+   <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7e9; /* Tom de verde */
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #2c6a4f; /* Verde escuro */
+            font-size: 28px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* 3 colunas */
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .product {
+            border: 1px solid #ccc;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            background-color: #fff;
+        }
+
+        .product img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .product h2 {
+            font-size: 18px;
+            margin: 10px 0;
+            color: #2c6a4f; /* Verde escuro */
+        }
+
+        .product p {
+            color: #555;
+        }
+
+        /* Estilos da janela modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 300px;
+            text-align: center;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        .success-message {
+            display: none;
+            color: green;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        .loading {
+            display: none;
+            color: blue;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        /* Ajustes para mobile */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: repeat(3, 1fr); /* Mantém 3 colunas no mobile */
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 24px; /* Ajustar o tamanho do título no mobile */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1 style="text-align: center;">
+        <img src="topo.jpg" width="412" alt="Descrição"/> 
+        <h1></h1>
+    <div class="container">
+        <!-- Os produtos serão adicionados aqui pelo JavaScript -->
+    </div>
+
+    <!-- Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <h3>Detalhes do Pedido</h3>
+            <form id="orderForm" onsubmit="submitForm(event)">
+                <input type="text" id="fullName" placeholder="Nome" required>
+                <button id="submitButton" type="submit">Enviar Pedido</button>
+            </form>
+            <div id="loadingMessage" class="loading">Processando pedido, aguarde...</div>
+            <div id="successMessage" class="success-message">Pronto! Você será redirecionado ao WhatsApp para enviar seu pedido.</div>
+        </div>
+    </div>
+
+    <script>
+        const produtos = [
+            {
+                id: 1,
+                nome: 'Colágeno Hidrolisado',
+                descricao: 'suplemento alimentar em cápsula.',
+                imagem: 'br.jpg',
+            },
+            {
+                id: 2,
+                nome: 'Óleo de Copaíba',
+                descricao: 'Suplemento alimentar.',
+                imagem: 'br0.jpg',
+            },
+            {
+                id: 3,
+                nome: 'Espinheira Santa',
+                descricao: 'Suplemento alimentar.',
+                imagem: 'br1.jpg',
+            },
+
+            {
+                id: 5,
+                nome: 'Dolomita',
+                descricao: 'Vitamina D3 suplemento alimentar em cápsula.',
+                imagem: 'br2.jpg',
+            },
+            {
+                id: 6,
+                nome: 'Magrieela',
+                descricao: 'Suplemento alimentar em cápsula.',
+                imagem: 'br3.jpg',
+            },
+            {
+                id: 7,
+                nome: 'Amora',
+                descricao: 'com isoflavona suplemento alimentar em cápsula.',
+                imagem: 'br4.jpg',
+            },
+            {
+                id: 8,
+                nome: 'UXI Amarelo',
+                descricao: 'E unha de gato 60 de cápsula.',
+                imagem: 'br5.jpg',
+            },
+            {
+                id: 9,
+                nome: 'Quebra Pedra',
+                descricao: 'e boldo 60de de cápsula.',
+                imagem: 'br6.jpg',
+            },
+            {
+                id: 10,
+                nome: 'Espinheira Santa',
+                descricao: 'Zero açúcar 60 de cápsula .',
+                imagem: 'br7.jpg',
+            },
+            {
+                id: 11,
+                nome: 'Castanha da Índia',
+                descricao: 'Fructus Aescuti 60 de cápsula.',
+                imagem: 'br8.jpg',
+            },
+            {
+                id: 12,
+                nome: 'Ômega 3',
+                descricao: 'Contém 60 cápsula gelatinosa.',
+                imagem: 'br9.jpg',
+            },
+            {
+                id: 13,
+                nome: 'Aguardente Alemã ',
+                descricao: 'Santa Feliciana.',
+                imagem: 'br10.jpg',
+            },
+            {
+                id: 14,
+                nome: 'Aguardente Alemã ',
+                descricao: 'A-Composto contém 19 mistura de ervas medicinais.',
+                imagem: 'br11.jpg',
+            },
+            {
+                id: 15,
+                nome: 'Elixir de Carnaúba',
+                descricao: '.',
+                imagem: 'br12.jpg',
+            },
+            {
+                id: 16,
+                nome: 'Elixir Flor de Aroeira',
+                descricao: 'Mulher bonita é mulher saudável.',
+                imagem: 'br13.jpg',
+            },
+            {
+                id: 17,
+                nome: 'Cura Tudo',
+                descricao: 'Plantas medicinais suplementos alimentar 100% natural.',
+                imagem: 'br14.jpg',
+            },
+            {
+                id: 18,
+                nome: 'Elixir de Pega Pinto',
+                descricao: '.',
+                imagem: 'br15.jpg',
+            },
+            {
+                id: 19,
+                nome: 'Elixir de Negro',
+                descricao: '.',
+                imagem: 'br16.jpg',
+            },
+            {
+                id: 20,
+                nome: 'Flor da Catingueira',
+                descricao: 'Pode ser usado por mulher de qualquer idade.',
+                imagem: 'br17.jpg',
+            },
+            {
+                id: 21,
+                nome: 'GineVida Plus',
+                descricao: 'Chá misto com vegetal zero açúcarml 500ml.',
+                imagem: 'br18.jpg',
+            },
+            {
+                id: 22,
+                nome: 'Espinheira Santa',
+                descricao: 'Chá misto com extrato de macela, boldo e hortelã  500ml.',
+                imagem: 'br19.jpg',
+            },
+            {
+                id: 23,
+                nome: 'Energyflora',
+                descricao: 'Suplemento vitamínico zero açúcarml 500ml.',
+                imagem: 'br20.jpg',
+            },
+            {
+                id: 24,
+                nome: 'Vida Flora',
+                descricao: 'Suplemento alimentar zero açúcarml 500ml.',
+                imagem: 'br21.jpg',
+            },
+            {
+                id: 25,
+                nome: 'Ora Pró Nobis',
+                descricao: 'Composto canela de velho sucupira e Inhameml 500ml.',
+                imagem: 'br22.jpg',
+            },
+            {
+                id: 26,
+                nome: 'Jatobá',
+                descricao: 'Chá misto O ligitimo zero açúcarml 500ml.',
+                imagem: 'br23.jpg',
+            },
+            {
+                id: 27,
+                nome: 'Moringa Oliveira',
+                descricao: 'zero açúcar 500ml.',
+                imagem: 'br24.jpg',
+            },
+            {
+                id: 27,
+                nome: 'ProstVoda Homem',
+                descricao: 'Chá misto com Vegetal zero açúcarml 500ml.',
+                imagem: 'br25.jpg',
+            },
+            {
+                id: 28,
+                nome: 'Espinheira Santa',
+                descricao: 'Chá misto zero açúcarml 500ml.',
+                imagem: 'br26.jpg',
+            },
+            {
+                id: 29,
+                nome: 'Flor da Índia',
+                descricao: 'Chá misto com Vegetal zero açúcar 500ml.',
+                imagem: 'br27.jpg',
+            },
+            {
+                id: 30,
+                nome: 'Flor Catingueira',
+                descricao: 'Chá misto com vegetal zero açúcarml 500ml.',
+                imagem: 'br28.jpg',
+            },
+            {
+                id: 31,
+                nome: 'UXI AmarelO',
+                descricao: 'Unha de Gato zero açúcarGato 500ml.',
+                imagem: 'br29.jpg',
+            },
+            {
+                id: 32,
+                nome: 'Mulher',
+                descricao: 'Chá misto zero açúcar 500ml.',
+                imagem: 'br30.jpg',
+            },
+            
+            // Adicione mais produtos aqui
+        ];
+
+        function renderizarProdutos() {
+            const container = document.querySelector('.container');
+            produtos.forEach(produto => {
+                const produtoDiv = document.createElement('div');
+                produtoDiv.classList.add('product');
+                produtoDiv.onclick = () => openModal(produto.nome);
+
+                produtoDiv.innerHTML = `
+                    <img src="${produto.imagem}" alt="${produto.nome}">
+                    <h2>${produto.nome}</h2>
+                    <p>${produto.descricao}</p>
+                `;
+
+                container.appendChild(produtoDiv);
+            });
+        }
+
+        function openModal(productName) {
+            produtoSelecionado = productName; // Armazena o nome do produto selecionado
+            document.getElementById('myModal').style.display = 'block';
+        }
+
+        function submitForm(event) {
+            event.preventDefault();
+
+            const fullName = document.getElementById('fullName').value;
+
+            // Ocultar o botão e mostrar a mensagem de carregamento
+            const submitButton = document.getElementById('submitButton');
+            submitButton.style.display = 'none';
+
+            const loadingMessage = document.getElementById('loadingMessage');
+            loadingMessage.style.display = 'block';
+
+            // Gerar o link do WhatsApp
+            const whatsappNumber = '98981780953';
+            const message = `Novo pedido realizado:\nNome: ${fullName}\nProduto: ${produtoSelecionado}`;
+            const whatsappUrl = `https://api.whatsapp.com/send?phone=${whatsappNumber}&text=${encodeURIComponent(message)}`;
+
+            // Simular carregamento de 5 segundos
+            setTimeout(() => {
+                // Ocultar a mensagem de carregamento
+                loadingMessage.style.display = 'none';
+
+                // Mostrar mensagem de sucesso
+                const successMessage = document.getElementById('successMessage');
+                successMessage.style.display = 'block';
+
+                // Redirecionar para o WhatsApp
+                window.open(whatsappUrl, '_blank');
+            }, 5000); // 5 segundos
+        }
+
+        // Fechar o modal se o usuário clicar fora da janela de conteúdo
+        window.onclick = function(event) {
+            const modal = document.getElementById('myModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Chame a função para renderizar os produtos ao carregar a página
+        window.onload = renderizarProdutos;
+    </script>
+
+</body>
+</html>
